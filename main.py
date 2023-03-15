@@ -15,7 +15,11 @@ import numpy as np
 
 from aegan import AEGAN
 
+import warnings
+warnings.filterwarnings('ignore')
 
+IMG_FOLDER = "data"
+VAL_EVERY = 30
 BATCH_SIZE = 32
 LATENT_DIM = 16
 EPOCHS = 20000
@@ -34,7 +38,6 @@ def main():
     os.makedirs("results/reconstructed", exist_ok=True)
     os.makedirs("results/checkpoints", exist_ok=True)
 
-    root = os.path.join("data")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     transform = tv.transforms.Compose([
             tv.transforms.RandomAffine(0, translate=(5/96, 5/96), fillcolor=(255,255,255)),
@@ -44,7 +47,7 @@ def main():
             tv.transforms.Normalize((0.5, 0.5, 0.5,), (0.5, 0.5, 0.5,))
             ])
     dataset = ImageFolder(
-            root=root,
+            root=IMG_FOLDER,
             transform=transform
             )
     dataloader = DataLoader(dataset,
@@ -88,7 +91,7 @@ def main():
         elapsed = f"{elapsed // 3600:02d}:{(elapsed % 3600) // 60:02d}:{elapsed % 60:02d}"
         print(f"Epoch {i+1}; Elapsed time = {elapsed}s")
         gan.train_epoch(max_steps=100)
-        if (i + 1) % 50 == 0:
+        if (i + 1) % VAL_EVERY == 0:
             torch.save(
                 gan.generator.state_dict(),
                 os.path.join("results", "checkpoints", f"gen.{i:05d}.pt"))
