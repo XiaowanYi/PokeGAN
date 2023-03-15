@@ -14,6 +14,7 @@ from PIL import Image
 import numpy as np
 
 from aegan import AEGAN
+from tqdm import tqdm
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -76,7 +77,7 @@ def main():
         batch_size=BATCH_SIZE,
         )
     start = time.time()
-    for i in range(EPOCHS):
+    for i in tqdm(range(EPOCHS)):
         while True:
             try:
                 with open("pause.json") as f:
